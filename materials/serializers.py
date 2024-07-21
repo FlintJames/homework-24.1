@@ -13,6 +13,13 @@ class LessonSerializer(ModelSerializer):
 class CourseSerializer(ModelSerializer):
     lessons = LessonSerializer()
 
+    def create(self, validated_data):
+        lesson = validated_data.pop('lessons')
+        course = Course.objects.create(**validated_data)
+        for lesson in lesson:
+            Lesson.objects.create(course=course, **lesson)
+            return course
+
     class Meta:
         model = Course
         fields = '__all__'
